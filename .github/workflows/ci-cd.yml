@@ -48,18 +48,19 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v1
         with:
-          java-version: '20.0.1'
-          distribution: 'temurin'
+          java-version: 11
 
       - name: Install Maven
         run: sudo apt-get install maven
 
       - name: Run dependency-check
-        run: mvn dependency-check:check
+        run: mvn dependency-check:check -Dformat=xml
 
       - name: Check for vulnerabilities
-        if: steps.dependency-check.outputs.vulnerabilities_found != 'false'
-        run: cat target/dependency-check-report.xml
+        if: steps.dependency-check.outputs.reportFileExists == 'true'
+        run: |
+          xsltproc target/dependency-check-report.xml ./stylesheet.xsl
+          cat target/dependency-check-report.transformed.xml
 
   release:
     needs: security-check
