@@ -58,7 +58,7 @@ jobs:
         run: mvn dependency-check:check
 
       - name: Check for vulnerabilities
-        if: steps.dependency-check.outputs.vulnerabilities_found == 'true'
+        if: steps.dependency-check.outputs.vulnerabilities_found != 'false'
         run: cat target/dependency-check-report.xml
 
   release:
