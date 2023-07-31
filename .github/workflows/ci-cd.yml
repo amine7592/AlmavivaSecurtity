@@ -1,0 +1,82 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Java JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '20.0.1'
+          distribution: 'temurin'
+
+      - name: Build with Maven
+        run: mvn clean install --quiet
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Java JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '20.0.1'
+          distribution: 'temurin'
+
+      - name: Build with Maven
+        run: echo "Start running test"
+
+      - name: Run tests with Maven
+        run: mvn test
+
+  security:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '20.0.1'
+          distribution: 'temurin'
+
+      - name: Run dependency-check
+        run: mvn dependency-check:check
+
+      - name: Check for vulnerabilities
+        if: steps.dependency-check.outputs.vulnerabilities_found == 'true'
+        run: cat target/dependency-check-report.xml
+
+  release:
+    needs: security
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Java JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '20.0.1'
+          distribution: 'temurin'
+
+      - name: Build Artifact
+        run: echo "creating artifact"
+
+      - name: Build Succeed
+        run: echo "Build done"
