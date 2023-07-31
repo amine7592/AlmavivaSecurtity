@@ -57,7 +57,7 @@ jobs:
         run: mvn dependency-check:check -Dformat=xml
 
       - name: Check for vulnerabilities
-        if: steps.dependency-check.outputs.reportFileExists == 'true'
+        if: steps.dependency-check.outputs.reportFileExists != 'false'
         run: |
           xsltproc target/dependency-check-report.xml ./stylesheet.xsl
           cat target/dependency-check-report.transformed.xml
