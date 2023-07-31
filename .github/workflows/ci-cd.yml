@@ -59,7 +59,7 @@ jobs:
 
       - name: Check for vulnerabilities
         if: steps.dependency-check.outputs.vulnerabilities_found == 'true'
-        run: cat target/dependency-check-report.xml
+        run: exit code 1
 
   release:
     needs: security
