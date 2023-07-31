@@ -62,7 +62,7 @@ jobs:
         run: cat target/dependency-check-report.xml
 
   release:
-    needs: security
+    needs: security-check
     runs-on: ubuntu-latest
 
     steps:
